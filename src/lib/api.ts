@@ -1,4 +1,4 @@
-/* ── DiTech FAO — API client ──────────────────────────────── */
+/* ── DiTech PUB — API client ──────────────────────────────── */
 
 const API = '/api';
 

@@ -23,7 +23,7 @@ export default function Login() {
       <div className="login-card">
         <div className="login-logo">
           <div className="ll-icon">DF</div>
-          <div className="ll-name">DiTech FAO</div>
+          <div className="ll-name">DiTech PUB</div>
           <div className="ll-tag">Presales CRM</div>
         </div>
 

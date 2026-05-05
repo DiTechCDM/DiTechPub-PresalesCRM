@@ -1,6 +1,6 @@
-# DiTech FAO — Presales CRM v2.0
+# DiTech PUB — Presales CRM v2.0
 
-A full-featured React + TypeScript presales CRM for DiTech FAO, targeting UK accounting firms. All data is stored locally in the browser (localStorage) — no backend required.
+A full-featured React + TypeScript presales CRM for DiTech PUB, targeting UK accounting firms. All data is stored locally in the browser (localStorage) — no backend required.
 
 ## Features
 

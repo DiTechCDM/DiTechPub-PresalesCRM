@@ -15,7 +15,7 @@ const defaultAdmin: AdminSettings = {
   },
   customFields: [],
   dropdowns: { stage: ['Lead', 'Suspect', 'Proposal', 'Win', 'Lost'], source: ['Data mining', 'LinkedIn', 'Event', 'SEO / Inbound', 'Referral'], software: ['Xero', 'QuickBooks', 'Sage 50', 'Sage Cloud', 'IRIS Suite', 'CCH', 'FreeAgent', 'Alphatax', 'TaxCalc', 'Multiple', 'Other'], assigned_to: ['Diksha', 'Sadichha'] },
-  settings: { company: 'DiTech FAO', adminEmail: 'admin@ditech.com', market: 'UK Accounting Firms', currency: 'GBP (£)' },
+  settings: { company: 'DiTech PUB', adminEmail: 'admin@ditech.com', market: 'UK Accounting Firms', currency: 'GBP (£)' },
 };
 
 /* ── Auto-sync helpers: diff arrays and fire API calls ── */
