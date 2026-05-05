@@ -351,7 +351,7 @@ export default function FirmsDB({ onLogCall }: { onLogCall?: (firmId: string) =>
           <table>
             <thead><tr>
               <th className="cb-col"><input type="checkbox" checked={paged.length>0&&paged.every(f=>sel.has(f.id))} onChange={e=>toggleAll(e.target.checked)} /></th>
-              {th('name','Firm name')}{th('city','City')}{th('size','Size')}{th('contact_name','Contact')}{th('phone','Phone / Email')}{th('software','Software')}{th('source','Source')}
+              {th('name','Firm name')}{th('city','City')}{th('region','Region')}{th('size','Size')}{th('contact_name','Contact')}{th('phone','Phone / Email')}{th('source','Source')}
               {th('stage','Stage')}{th('assigned_to','Rep')}{th('win_amount','Amount')}
               <th>Calls</th>{th('last_contact','Last contact')}<th>Last outcome</th>{th('follow_up','Follow-up')}<th></th>
             </tr></thead>
@@ -367,10 +367,10 @@ export default function FirmsDB({ onLogCall }: { onLogCall?: (firmId: string) =>
                     <td className="cb-col"><input type="checkbox" checked={sel.has(f.id)} onChange={e=>toggleRow(f.id,e.target.checked)} /></td>
                     <td style={{whiteSpace:'nowrap',maxWidth:160,overflow:'hidden',textOverflow:'ellipsis'}} title={f.name}><strong>{f.name}</strong></td>
                     <td style={{color:'var(--t2)',fontSize:12}}>{f.city}</td>
+                    <td style={{color:'var(--t2)',fontSize:12}}>{f.region||'—'}</td>
                     <td style={{fontSize:12}}>{f.size||'—'}</td>
                     <td style={{maxWidth:120}}><div style={{fontSize:12,fontWeight:500,whiteSpace:'nowrap',overflow:'hidden',textOverflow:'ellipsis'}}>{f.contact_name||'—'}</div><div style={{fontSize:11,color:'var(--t2)'}}>{f.contact_title}</div></td>
                     <td style={{maxWidth:130}}><div style={{fontSize:12,color:'var(--blue)'}}>{f.phone||f.main_phone||'—'}</div><div style={{fontSize:11,color:'var(--t2)',overflow:'hidden',textOverflow:'ellipsis',whiteSpace:'nowrap'}}>{f.email}</div></td>
-                    <td><span className="spill">{f.software||'—'}</span></td>
                     <td><span className="spill">{f.source||'—'}</span></td>
                     <td>
                       <select className={`stage-dd ${SDC[f.stage]||'sd-lead'}`} value={f.stage} onChange={e=>quickStage(f.id,e.target.value)} onClick={e=>e.stopPropagation()}>
