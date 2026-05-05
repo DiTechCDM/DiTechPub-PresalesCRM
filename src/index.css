@@ -35,7 +35,7 @@ html,body{height:100%;overflow:hidden;font-family:-apple-system,BlinkMacSystemFo
 .sb-toggle:hover{background:rgba(255,255,255,.08)}
 .topbar-logo{display:flex;align-items:center;gap:8px;padding:0 10px 0 4px;border-right:1px solid rgba(255,255,255,.12);margin-right:12px}
 .topbar-logo .name{font-size:15px;font-weight:700;color:#fff;letter-spacing:-.2px}
-.topbar-logo .tag{font-size:10px;color:rgba(255,255,255,.5);letter-spacing:.06em;text-transform:uppercase;margin-top:1px}
+.topbar-logo .tag{font-size:10px;color:rgba(255,255,255,.7);background:transparent;letter-spacing:.06em;text-transform:uppercase;margin-top:1px}
 .topbar-nav{display:flex;gap:2px}
 .tnav-btn{padding:6px 14px;border-radius:8px;border:none;background:none;color:rgba(255,255,255,.65);font-size:12px;font-weight:500;cursor:pointer;transition:all .15s;white-space:nowrap}
 .tnav-btn:hover{background:rgba(255,255,255,.1);color:#fff}
