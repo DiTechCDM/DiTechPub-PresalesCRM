@@ -48,7 +48,7 @@ export default function Layout({ children, currentPanel, setPanel }: any) {
           <Menu size={18} color="#fff" />
         </button>
         <div className="topbar-logo">
-          <div><div className="name">DiTech PUB</div><div className="tag">Presales CRM</div></div>
+          <div><div className="name">DiTech FAO</div><div className="tag">Presales CRM</div></div>
         </div>
         <div className="topbar-nav">
           {NAV_PANELS.filter(p => !(p as any).adminOnly || isAdmin).map(p => (
@@ -91,7 +91,7 @@ export default function Layout({ children, currentPanel, setPanel }: any) {
               );
             })}
           </div>
-          <div className="sb-footer">DiTech PUB v2.0 · All data local</div>
+          <div className="sb-footer">DiTech FAO v2.0 · All data local</div>
         </div>
         <div id="content" className={sbOpen ? '' : 'sb-collapsed'}>
           {children}
