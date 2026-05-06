@@ -595,9 +595,7 @@ export default function FirmsDB({ onLogCall }: { onLogCall?: (firmId: string) =>
                     </select>
                   </div>
                   <div className="fg"><label>Software</label>
-                    <select value={form.software||''} onChange={e=>setForm(f=>({...f,software:e.target.value}))}>
-                      <option value="">Unknown</option>{(admin.dropdowns?.software||[]).map((s:string)=><option key={s}>{s}</option>)}
-                    </select>
+                    <input type="text" placeholder="e.g. Xero" value={form.software||''} onChange={e=>setForm(f=>({...f,software:e.target.value}))} />
                   </div>
                   <div className="fg"><label>Source</label>
                     <select value={form.source||''} onChange={e=>setForm(f=>({...f,source:e.target.value}))}>
@@ -610,9 +608,7 @@ export default function FirmsDB({ onLogCall }: { onLogCall?: (firmId: string) =>
                     </select>
                   </div>
                   <div className="fg"><label>Service interest</label>
-                    <select value={form.service_interest||''} onChange={e=>setForm(f=>({...f,service_interest:e.target.value}))}>
-                      <option value="">TBD</option><option>Bookkeeping & VAT</option><option>Payroll</option><option>Personal Tax & Year-End</option><option>Full package</option>
-                    </select>
+                    <input type="text" placeholder="e.g. Payroll" value={form.service_interest||''} onChange={e=>setForm(f=>({...f,service_interest:e.target.value}))} />
                   </div>
                   <div className="fs-title">Dates & revenue</div>
                   <div className="fg"><label>Win amount (£)</label><input type="number" value={form.win_amount||''} onChange={e=>setForm(f=>({...f,win_amount:parseFloat(e.target.value)||0}))} /></div>
