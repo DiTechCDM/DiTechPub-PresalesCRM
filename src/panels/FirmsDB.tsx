@@ -452,10 +452,7 @@ export default function FirmsDB({ onLogCall }: { onLogCall?: (firmId: string) =>
                   <div className="fg"><label>Companies House</label><input value={form.ch_number||''} onChange={e=>setForm(f=>({...f,ch_number:e.target.value}))} /></div>
                   <div className="fg"><label>City *</label><input value={form.city||''} onChange={e=>setForm(f=>({...f,city:e.target.value}))} /></div>
                   <div className="fg"><label>Region</label>
-                    <select value={form.region||''} onChange={e=>setForm(f=>({...f,region:e.target.value}))}>
-                      <option value="">Select</option>
-                      {['London','South East','South West','East of England','Midlands','North West','North East','Yorkshire','Scotland','Wales','Northern Ireland'].map(r=><option key={r}>{r}</option>)}
-                    </select>
+                    <input type="text" placeholder="e.g. South West" value={form.region||''} onChange={e=>setForm(f=>({...f,region:e.target.value}))} />
                   </div>
                   <div className="fg"><label>Firm size</label>
                     <select value={form.size||''} onChange={e=>setForm(f=>({...f,size:e.target.value}))}>
