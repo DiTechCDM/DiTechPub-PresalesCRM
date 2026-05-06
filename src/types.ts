@@ -42,7 +42,7 @@ export interface Firm {
   phone?: string;
   email?: string;
   main_phone?: string;
-  software?: string;
+  category?: string;
   source?: string;
   stage: string;
   assigned_to?: string;

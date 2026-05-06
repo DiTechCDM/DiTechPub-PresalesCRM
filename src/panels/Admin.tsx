@@ -301,7 +301,7 @@ export default function Admin() {
 
           {/* DROPDOWNS */}
           {section==='dropdowns' && (
-            <div>{Object.entries({stage:'Stage',source:'Lead source',software:'Accounting software',assigned_to:'Assigned rep'}).map(([key,label])=>{
+            <div>{Object.entries({stage:'Stage',source:'Lead source',assigned_to:'Assigned rep'}).map(([key,label])=>{
               const opts=(admin.dropdowns as any)?.[key]||[];
               return <div key={key} className="card" style={{marginBottom:10}}>
                 <div style={{display:'flex',alignItems:'center',justifyContent:'space-between',marginBottom:8}}><div className="card-title">{label} <span style={{fontSize:11,fontWeight:400,color:'var(--t2)'}}>({opts.length} options)</span></div></div>
@@ -470,7 +470,7 @@ export default function Admin() {
             <div>
               <div style={{display:'flex',justifyContent:'space-between',marginBottom:10}}><div className="card-title">Field manager</div></div>
               <div className="alert info" style={{marginBottom:10,fontSize:12}}>System fields are shown below. Custom field builder coming soon.</div>
-              {['Firm name','City','Region','Size','Staff count','Companies House','Website','Contact name','Job title','Direct phone','Email','Switchboard','Software','Source','Stage','Assigned rep','Win amount (£)','Last contact','Follow-up','Notes'].map(f=><div key={f} style={{display:'flex',alignItems:'center',gap:10,padding:'9px 12px',background:'#fff',border:'.5px solid var(--border)',borderRadius:'var(--r)',marginBottom:5}}><span style={{color:'var(--t3)',fontSize:12}}>⠿</span><span style={{fontSize:12,fontWeight:500,flex:1}}>{f}</span><span className="tag">system</span></div>)}
+              {['Firm name','City','Region','Size','Staff count','Companies House','Website','Contact name','Job title','Direct phone','Email','Switchboard','Category','Source','Stage','Assigned rep','Win amount (£)','Last contact','Follow-up','Notes'].map(f=><div key={f} style={{display:'flex',alignItems:'center',gap:10,padding:'9px 12px',background:'#fff',border:'.5px solid var(--border)',borderRadius:'var(--r)',marginBottom:5}}><span style={{color:'var(--t3)',fontSize:12}}>⠿</span><span style={{fontSize:12,fontWeight:500,flex:1}}>{f}</span><span className="tag">system</span></div>)}
             </div>
           )}
 

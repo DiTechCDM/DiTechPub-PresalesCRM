@@ -21,7 +21,7 @@ function mapFirm(row, contacts = []) {
     phone: primary?.phone || '',
     email: primary?.email || '',
     main_phone: row.main_phone || '',
-    software: row.software || '',
+    category: row.category || '',
     source: row.source || '',
     stage: row.stage,
     assigned_to: row.rep_name || '',
@@ -87,12 +87,12 @@ router.post('/', async (req, res) => {
     await pool.query(
       `INSERT INTO firms
         (id,name,ch_number,city,region,size,staff_count,website,linkedin,main_phone,
-         software,source,stage,assigned_rep_id,pricing_model,service_interest,
+         category,source,stage,assigned_rep_id,pricing_model,service_interest,
          win_amount,last_contact,follow_up,notes,added_by,added_at)
        VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)`,
       [id, f.name, f.ch_number||null, f.city||null, f.region||null, f.size||null,
        f.staff_count ? parseInt(f.staff_count) : null, f.website||null, f.linkedin||null,
-       f.main_phone||null, f.software||null, f.source||null, f.stage||'Lead', rid,
+       f.main_phone||null, f.category||null, f.source||null, f.stage||'Lead', rid,
        f.pricing_model||null, f.service_interest||null, f.win_amount||0,
        f.last_contact||null, f.follow_up||null, f.notes||null, f.added_by||null,
        f.added_date || todayIST()]
@@ -132,13 +132,13 @@ router.put('/:id', async (req, res) => {
 
     await pool.query(
       `UPDATE firms SET name=?,ch_number=?,city=?,region=?,size=?,staff_count=?,
-        website=?,linkedin=?,main_phone=?,software=?,source=?,stage=?,
+        website=?,linkedin=?,main_phone=?,category=?,source=?,stage=?,
         assigned_rep_id=?,pricing_model=?,service_interest=?,win_amount=?,
         last_contact=?,follow_up=?,notes=?,updated_at=NOW()
        WHERE id=?`,
       [f.name, f.ch_number||null, f.city||null, f.region||null, f.size||null,
        f.staff_count ? parseInt(f.staff_count) : null, f.website||null, f.linkedin||null,
-       f.main_phone||null, f.software||null, f.source||null, f.stage||'Lead', rid,
+       f.main_phone||null, f.category||null, f.source||null, f.stage||'Lead', rid,
        f.pricing_model||null, f.service_interest||null, f.win_amount||0,
        f.last_contact||null, f.follow_up||null, f.notes||null, id]
     );

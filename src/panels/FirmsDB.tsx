@@ -4,7 +4,23 @@ import { SDC, fmtDate, fmtGBP, OC_LABELS, OC_COLORS, uid, TODAY } from '../lib/u
 import { exportToXlsx, parseCSVText, parseXlsxBinary } from '../lib/xlsx';
 import { Firm, FirmContact } from '../types';
 
-const BLANK_FIRM: Partial<Firm> = { name:'',ch_number:'',city:'',region:'',size:'',staff_count:'',contact_name:'',contact_title:'',phone:'',email:'',main_phone:'',contact_li:'',website:'',linkedin:'',software:'',source:'',stage:'Lead',pricing_model:'',service_interest:'',assigned_to:'',last_contact:'',follow_up:'',notes:'',win_amount:0 };
+const BLANK_FIRM: Partial<Firm> = { name:'',ch_number:'',city:'',region:'',size:'',staff_count:'',contact_name:'',contact_title:'',phone:'',email:'',main_phone:'',contact_li:'',website:'',linkedin:'',category:'',source:'',stage:'Lead',pricing_model:'',service_interest:'',assigned_to:'',last_contact:'',follow_up:'',notes:'',win_amount:0 };
+
+const CATEGORY_OPTIONS = [
+  'STM Publishing',
+  'Academic & Scholarly Publishing',
+  'Journals Publishing',
+  'K-12',
+  'Higher Education Publishing',
+  'Trade Books Publishing',
+  "Children's Publishing",
+  'Digital Elearning Publishing',
+  'Magazine Publishing',
+  'Corporate Publishing',
+  'Government NGO Publishing',
+  'Religious Publishing',
+  'Comics Graphic Novels Publishing',
+];
 
 export default function FirmsDB({ onLogCall }: { onLogCall?: (firmId: string) => void }) {
   const { firms, setFirms, calls, currentUser, admin, showToast, hasPerm, scopeFirms } = useAppContext();
@@ -34,7 +50,7 @@ export default function FirmsDB({ onLogCall }: { onLogCall?: (firmId: string) =>
       if (sizeF && f.size !== sizeF) return false;
       if (srcF && f.source !== srcF) return false;
       if (repF && f.assigned_to !== repF) return false;
-      if (search) { const q = search.toLowerCase(); const b = [f.name,f.city,f.contact_name,f.email,f.phone,f.notes,f.region,f.software,f.ch_number].join(' ').toLowerCase(); if (!b.includes(q)) return false; }
+      if (search) { const q = search.toLowerCase(); const b = [f.name,f.city,f.contact_name,f.email,f.phone,f.notes,f.region,f.category,f.ch_number].join(' ').toLowerCase(); if (!b.includes(q)) return false; }
       return true;
     });
     res.sort((a:any,b:any) => { const av=a[sortCol]||'', bv=b[sortCol]||''; const r=String(av).localeCompare(String(bv),undefined,{numeric:true,sensitivity:'base'}); return sortDir==='asc'?r:-r; });
@@ -87,7 +103,7 @@ export default function FirmsDB({ onLogCall }: { onLogCall?: (firmId: string) =>
     const maxNotes = Math.max(0, ...filtered.map(f => (firmCallNotes[f.id] || []).length));
 
     // Base headers
-    const baseHeaders = ['Firm Name','Companies House','City','Region','Size','Main Phone','Software','Source','Stage','Assigned','Win Amount £','Last Contact','Follow-up','Firm Notes'];
+    const baseHeaders = ['Firm Name','Companies House','City','Region','Size','Main Phone','Category','Source','Stage','Assigned','Win Amount £','Last Contact','Follow-up','Firm Notes'];
 
     // Dynamic contact headers
     const contactHeaders: string[] = [];
@@ -107,7 +123,7 @@ export default function FirmsDB({ onLogCall }: { onLogCall?: (firmId: string) =>
       const row: Record<string, unknown> = {
         'Firm Name': f.name, 'Companies House': f.ch_number ?? '', 'City': f.city ?? '',
         'Region': f.region ?? '', 'Size': f.size ?? '', 'Main Phone': f.main_phone ?? '',
-        'Software': f.software ?? '', 'Source': f.source ?? '', 'Stage': f.stage,
+        'Category': f.category ?? '', 'Source': f.source ?? '', 'Stage': f.stage,
         'Assigned': f.assigned_to ?? '', 'Win Amount £': f.win_amount || '',
         'Last Contact': f.last_contact ?? '', 'Follow-up': f.follow_up ?? '',
         'Firm Notes': f.notes ?? '',
@@ -177,7 +193,7 @@ export default function FirmsDB({ onLogCall }: { onLogCall?: (firmId: string) =>
       staff_count:  g(['staff count','staff']),
       ch_number:    g(['companies house','ch number','ch no']),
       website:      g(['website','web']),
-      software:     g(['software','accounting software']),
+      category:     g(['category','publishing category']),
       source:       g(['source','lead source']),
       stage:        g(['stage','status']),
       assigned_to:  g(['assigned to','rep','assigned']),
@@ -242,7 +258,7 @@ export default function FirmsDB({ onLogCall }: { onLogCall?: (firmId: string) =>
         ch_number:    gv(idx.ch_number)   || undefined,
         website:      gv(idx.website)     || undefined,
         main_phone:   gv(idx.main_phone)  || undefined,
-        software:     gv(idx.software)    || undefined,
+        category:     gv(idx.category)    || undefined,
         source:       gv(idx.source)      || undefined,
         stage:        gv(idx.stage)       || 'Lead',
         assigned_to:  gv(idx.assigned_to) || undefined,
@@ -351,7 +367,7 @@ export default function FirmsDB({ onLogCall }: { onLogCall?: (firmId: string) =>
           <table>
             <thead><tr>
               <th className="cb-col"><input type="checkbox" checked={paged.length>0&&paged.every(f=>sel.has(f.id))} onChange={e=>toggleAll(e.target.checked)} /></th>
-              {th('name','Firm name')}{th('city','City')}{th('region','Region')}{th('size','Size')}{th('contact_name','Contact')}{th('phone','Phone / Email')}{th('source','Source')}
+              {th('name','Firm name')}{th('city','City')}{th('region','Region')}{th('category','Category')}{th('size','Size')}{th('contact_name','Contact')}{th('phone','Phone / Email')}{th('source','Source')}
               {th('stage','Stage')}{th('assigned_to','Rep')}{th('win_amount','Amount')}
               <th>Calls</th>{th('last_contact','Last contact')}<th>Last outcome</th>{th('follow_up','Follow-up')}<th></th>
             </tr></thead>
@@ -368,6 +384,7 @@ export default function FirmsDB({ onLogCall }: { onLogCall?: (firmId: string) =>
                     <td style={{whiteSpace:'nowrap',maxWidth:160,overflow:'hidden',textOverflow:'ellipsis'}} title={f.name}><strong>{f.name}</strong></td>
                     <td style={{color:'var(--t2)',fontSize:12}}>{f.city}</td>
                     <td style={{color:'var(--t2)',fontSize:12}}>{f.region||'—'}</td>
+                    <td style={{fontSize:12,color:'var(--t2)'}}>{f.category||'—'}</td>
                     <td style={{fontSize:12}}>{f.size||'—'}</td>
                     <td style={{maxWidth:120}}><div style={{fontSize:12,fontWeight:500,whiteSpace:'nowrap',overflow:'hidden',textOverflow:'ellipsis'}}>{f.contact_name||'—'}</div><div style={{fontSize:11,color:'var(--t2)'}}>{f.contact_title}</div></td>
                     <td style={{maxWidth:130}}><div style={{fontSize:12,color:'var(--blue)'}}>{f.phone||f.main_phone||'—'}</div><div style={{fontSize:11,color:'var(--t2)',overflow:'hidden',textOverflow:'ellipsis',whiteSpace:'nowrap'}}>{f.email}</div></td>
@@ -594,8 +611,11 @@ export default function FirmsDB({ onLogCall }: { onLogCall?: (firmId: string) =>
                       <option value="">Unassigned</option>{admin.reps?.map((r:any)=><option key={r.name}>{r.name}</option>)}
                     </select>
                   </div>
-                  <div className="fg"><label>Software</label>
-                    <input type="text" placeholder="e.g. Xero" value={form.software||''} onChange={e=>setForm(f=>({...f,software:e.target.value}))} />
+                  <div className="fg"><label>Category</label>
+                    <select value={form.category||''} onChange={e=>setForm(f=>({...f,category:e.target.value}))}>
+                      <option value="">Select</option>
+                      {CATEGORY_OPTIONS.map(c=><option key={c}>{c}</option>)}
+                    </select>
                   </div>
                   <div className="fg"><label>Source</label>
                     <select value={form.source||''} onChange={e=>setForm(f=>({...f,source:e.target.value}))}>
@@ -652,7 +672,7 @@ export default function FirmsDB({ onLogCall }: { onLogCall?: (firmId: string) =>
                 <button className="btn primary sm" onClick={()=>{
                   const headers = [
                     'Firm Name','City','Region','Size','Staff Count','Companies House',
-                    'Website','Switchboard','Software','Source','Stage','Assigned To',
+                    'Website','Switchboard','Category','Source','Stage','Assigned To',
                     'Firm Notes','Win Amount',
                     'Contact Name','Contact Title','Contact Phone','Contact Email','Contact LinkedIn','Contact Notes',
                     'Contact 2 Name','Contact 2 Title','Contact 2 Phone','Contact 2 Email','Contact 2 LinkedIn',
@@ -660,7 +680,7 @@ export default function FirmsDB({ onLogCall }: { onLogCall?: (firmId: string) =>
                   ];
                   const example = [
                     'Begbies Traynor','Manchester','North West','Large (50+)','120','12345678',
-                    'www.begbies-traynor.com','0161 837 1700','Sage 50','Data mining','Lead','Diksha',
+                    'www.begbies-traynor.com','0161 837 1700','STM Publishing','Data mining','Lead','Diksha',
                     'Strong prospect — met at Summit','',
                     'Alan Griffiths','Managing Partner','0161 837 1700','alan@begbies.co.uk','linkedin.com/in/alan','Key DM — friendly',
                     'Sarah Blake','Finance Director','0161 837 1701','sarah@begbies.co.uk','',
@@ -695,7 +715,7 @@ export default function FirmsDB({ onLogCall }: { onLogCall?: (firmId: string) =>
               <div style={{marginTop:12,fontSize:11,color:'var(--t2)',lineHeight:1.8}}>
                 <div style={{fontWeight:600,color:'var(--text)',marginBottom:3}}>Supported columns</div>
                 <div style={{display:'grid',gridTemplateColumns:'1fr 1fr',gap:'0 16px'}}>
-                  <div><span style={{color:'var(--brand)',fontWeight:600}}>Firm:</span> Firm Name, City, Region, Size, Companies House, Software, Source, Stage, Assigned To, Firm Notes, Win Amount, Switchboard</div>
+                  <div><span style={{color:'var(--brand)',fontWeight:600}}>Firm:</span> Firm Name, City, Region, Size, Companies House, Category, Source, Stage, Assigned To, Firm Notes, Win Amount, Switchboard</div>
                   <div><span style={{color:'var(--brand)',fontWeight:600}}>Contacts (up to 3):</span> Contact Name, Contact Title, Contact Phone, Contact Email, Contact LinkedIn — repeat with "Contact 2 …" and "Contact 3 …"</div>
                 </div>
                 <div style={{marginTop:6,color:'var(--t3)'}}>Firm Name is required. Existing firms are matched by name and updated — contacts are merged, not replaced.</div>

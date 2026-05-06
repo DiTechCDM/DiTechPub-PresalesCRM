@@ -267,7 +267,7 @@ function Main() {
                       <a href={`tel:${drawerFirm.phone || drawerFirm.main_phone}`} style={{ color: 'var(--blue)' }}>{drawerFirm.phone || drawerFirm.main_phone}</a>
                     </div>
                   )}
-                  {drawerFirm.software && <div><span style={{ color: 'var(--t3)', fontSize: 10 }}>Software</span><br />{drawerFirm.software}</div>}
+                  {drawerFirm.category && <div><span style={{ color: 'var(--t3)', fontSize: 10 }}>Category</span><br />{drawerFirm.category}</div>}
                   <div style={{ gridColumn: '1/-1' }}>
                     <span style={{ color: 'var(--t3)', fontSize: 10 }}>Stage</span><br />
                     <span className={`badge ${STAGE_BG[drawerFirm.stage] || 'b-none'}`}>{drawerFirm.stage || 'Lead'}</span>
