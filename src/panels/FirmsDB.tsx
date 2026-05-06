@@ -322,7 +322,7 @@ export default function FirmsDB({ onLogCall }: { onLogCall?: (firmId: string) =>
     <div style={{ display: 'flex', flexDirection: 'column', flex: 1, minHeight: 0 }}>
       <div className="page-hd">
         <div>
-          <div className="page-title">UK Firms Database</div>
+          <div className="page-title">Firms Database</div>
           <div className="page-sub">{scoped.length} firms · {filtered.length} shown</div>
         </div>
         <div style={{display:'flex',gap:7}}>
