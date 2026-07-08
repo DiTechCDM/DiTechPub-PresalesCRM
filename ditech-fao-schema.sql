@@ -184,7 +184,7 @@ CREATE TABLE calls (
   contact_name    VARCHAR(150) NULL,                -- denormalised
   rep_name        VARCHAR(100) NULL,                -- denormalised
   type            ENUM('call','followup','linkedin','email','meeting') NOT NULL DEFAULT 'call',
-  outcome         ENUM('mtg','cb','in','na','gk','ni','vm') NOT NULL,
+  outcome         ENUM('mtg','cb','in','na','gk','ni','vm','em','dm') NOT NULL,
   stage_at_time   VARCHAR(30)  NULL,                -- stage of firm when call was logged
   notes           TEXT         NULL,
   follow_up_date  DATE         NULL,

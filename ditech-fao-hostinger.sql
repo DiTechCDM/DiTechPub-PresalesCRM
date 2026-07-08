@@ -202,7 +202,7 @@ CREATE TABLE `calls` (
   `contact_name` varchar(150) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
   `rep_name` varchar(100) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
   `type` enum('call','followup','linkedin','email','meeting') COLLATE utf8mb4_unicode_ci NOT NULL DEFAULT 'call',
-  `outcome` enum('mtg','cb','in','na','gk','ni','vm') COLLATE utf8mb4_unicode_ci NOT NULL,
+  `outcome` enum('mtg','cb','in','na','gk','ni','vm','em','dm') COLLATE utf8mb4_unicode_ci NOT NULL,
   `stage_at_time` varchar(30) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
   `notes` text COLLATE utf8mb4_unicode_ci,
   `follow_up_date` date DEFAULT NULL,
