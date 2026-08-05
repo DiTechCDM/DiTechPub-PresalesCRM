@@ -1,9 +1,102 @@
 import React, { useState, useMemo } from 'react';
 import { useAppContext } from '../store';
-import { fmtFull, fmtDate, OC_LABELS, OC_COLORS, TYPE_LBL, TODAY, MONTH_START } from '../lib/utils';
+import { uid, fmtFull, fmtDate, OC_LABELS, OC_COLORS, TYPE_LBL, TODAY, MONTH_START } from '../lib/utils';
+import { Call, Reminder } from '../types';
+
+const REM_TYPE_META: Record<string, { label: string; emoji: string; col: string; bg: string }> = {
+  'follow-up': { label: 'Follow-up call', emoji: '📞', col: '#185FA5', bg: '#E6F1FB' },
+  'meeting':   { label: 'Meeting',        emoji: '📅', col: '#1D9E75', bg: '#E1F5EE' },
+  'task':      { label: 'Task',           emoji: '✅', col: '#854F0B', bg: '#FAEEDA' },
+  'linkedin':  { label: 'LinkedIn',       emoji: '💼', col: '#7F77DD', bg: '#f5f0ff' },
+};
+
+function CallReminderModal({ call, existing, onClose, onSave }: {
+  call: Call;
+  existing: Reminder | null;
+  onClose: () => void;
+  onSave: (call: Call, data: Partial<Reminder>) => void;
+}) {
+  const { showToast } = useAppContext();
+  const [form, setForm] = useState<Partial<Reminder>>(() => existing ? {
+    type: existing.type, title: existing.title, dueDate: existing.dueDate,
+    dueTime: existing.dueTime, notes: existing.notes,
+  } : {
+    type: 'follow-up',
+    title: `Follow up — ${call.firm}`,
+    dueDate: call.fu || TODAY,
+    dueTime: '09:00',
+    notes: call.notes || '',
+  });
+
+  const save = () => {
+    if (!form.title?.trim()) { showToast('Title is required', 'err'); return; }
+    if (!form.dueDate)       { showToast('Due date is required', 'err'); return; }
+    onSave(call, form);
+  };
+
+  return (
+    <div className="mov" onClick={e => { if (e.target === e.currentTarget) onClose(); }}>
+      <div className="modal" style={{ width: 520 }} onClick={e => e.stopPropagation()}>
+        <div className="mhd">
+          <h2>{existing ? 'Edit reminder' : '+ Add reminder'}</h2>
+          <button className="mx" onClick={onClose}>✕</button>
+        </div>
+        <div className="mbd" style={{ display: 'flex', flexDirection: 'column', gap: 12 }}>
+          <div className="fg">
+            <label>Type</label>
+            <div style={{ display: 'flex', gap: 6, flexWrap: 'wrap', marginTop: 4 }}>
+              {Object.entries(REM_TYPE_META).map(([k, v]) => (
+                <button key={k} type="button"
+                  onClick={() => setForm(f => ({ ...f, type: k as Reminder['type'] }))}
+                  style={{ padding: '5px 13px', borderRadius: 14, fontSize: 12, fontWeight: 500,
+                    cursor: 'pointer', transition: 'all .1s',
+                    border: `.5px solid ${form.type === k ? v.col : 'var(--border2)'}`,
+                    background: form.type === k ? v.bg : '#fff',
+                    color: form.type === k ? v.col : 'var(--t2)' }}
+                >
+                  {v.emoji} {v.label}
+                </button>
+              ))}
+            </div>
+          </div>
+
+          <div className="fg">
+            <label>Title *</label>
+            <input value={form.title || ''} autoFocus
+              onChange={e => setForm(f => ({ ...f, title: e.target.value }))} />
+          </div>
+
+          <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 10 }}>
+            <div className="fg">
+              <label>Due date *</label>
+              <input type="date" value={form.dueDate || TODAY}
+                onChange={e => setForm(f => ({ ...f, dueDate: e.target.value }))} />
+            </div>
+            <div className="fg">
+              <label>Due time</label>
+              <input type="time" value={form.dueTime || '09:00'}
+                onChange={e => setForm(f => ({ ...f, dueTime: e.target.value }))} />
+            </div>
+          </div>
+
+          <div className="fg">
+            <label>Notes</label>
+            <textarea value={form.notes || ''}
+              onChange={e => setForm(f => ({ ...f, notes: e.target.value }))}
+              style={{ minHeight: 72 }} />
+          </div>
+        </div>
+        <div className="mft">
+          <button className="btn" onClick={onClose}>Cancel</button>
+          <button className="btn primary" onClick={save}>{existing ? 'Save changes' : 'Add reminder'}</button>
+        </div>
+      </div>
+    </div>
+  );
+}
 
 export default function AllCalls() {
-  const { calls, admin, scopeCalls } = useAppContext();
+  const { calls, admin, scopeCalls, reminders, setReminders, showToast } = useAppContext();
   const [search, setSearch] = useState('');
   const [repF, setRepF] = useState('');
   const [ocF, setOcF] = useState('');
@@ -14,6 +107,42 @@ export default function AllCalls() {
   const [page, setPage] = useState(1);
   const perPage = 50;
   const [expandedNoteId, setExpandedNoteId] = useState<string|null>(null);
+  const [reminderCall, setReminderCall] = useState<Call|null>(null);
+
+  const remindersByCall = useMemo(() => {
+    const m = new Map<string, Reminder>();
+    for (const r of reminders) if (r.callId) m.set(r.callId, r);
+    return m;
+  }, [reminders]);
+
+  const saveCallReminder = (call: Call, data: Partial<Reminder>) => {
+    const existing = remindersByCall.get(call.id);
+    if (existing) {
+      setReminders(reminders.map(r => r.id === existing.id ? { ...r, ...data } as Reminder : r));
+      showToast('Reminder updated', 'ok');
+    } else {
+      const newReminder: Reminder = {
+        id: uid(),
+        done: false,
+        createdAt: new Date().toISOString(),
+        rep: call.rep,
+        createdFrom: 'call-tracker',
+        firmId: call.firmId,
+        firmName: call.firm,
+        contact: call.contact || '',
+        callId: call.id,
+        type: 'follow-up',
+        title: `Follow up — ${call.firm}`,
+        dueDate: call.fu || TODAY,
+        dueTime: '09:00',
+        notes: call.notes || '',
+        ...data,
+      } as Reminder;
+      setReminders([newReminder, ...reminders]);
+      showToast('Reminder added ✓', 'ok');
+    }
+    setReminderCall(null);
+  };
 
   const setPreset = (p: string) => {
     setRangePreset(p);
@@ -101,6 +230,10 @@ export default function AllCalls() {
               ) : paged.map(c => {
                 const repObj = admin.reps?.find(r=>r.name===c.rep);
                 const col = repObj?.col || '#888';
+                const linkedReminder = remindersByCall.get(c.id);
+                const bellTitle = linkedReminder
+                  ? `${linkedReminder.title} — ${fmtDate(linkedReminder.dueDate)}${linkedReminder.dueTime ? ' ' + linkedReminder.dueTime : ''}${linkedReminder.done ? ' (done)' : ''}`
+                  : 'Add reminder for this call';
                 return (
                   <tr key={c.id}>
                     <td style={{fontSize:12,color:'var(--t2)',whiteSpace:'nowrap'}}>{fmtFull(c.ts)}</td>
@@ -131,7 +264,21 @@ export default function AllCalls() {
                         </div>
                       ) : '—'}
                     </td>
-                    <td style={{fontSize:12,color:'var(--amber)'}}>{c.fu ? fmtDate(c.fu) : '—'}</td>
+                    <td style={{fontSize:12,color:'var(--amber)'}}>
+                      <div style={{display:'flex',alignItems:'center',gap:6}}>
+                        <span>{c.fu ? fmtDate(c.fu) : '—'}</span>
+                        <button
+                          onClick={()=>setReminderCall(c)}
+                          title={bellTitle}
+                          style={{
+                            width:18,height:18,borderRadius:'50%',border:'none',cursor:'pointer',padding:0,
+                            display:'inline-flex',alignItems:'center',justifyContent:'center',fontSize:9,flexShrink:0,
+                            background: linkedReminder ? '#188755' : 'var(--s2)',
+                            color: linkedReminder ? '#fff' : 'var(--t3)',
+                          }}
+                        >🔔</button>
+                      </div>
+                    </td>
                   </tr>
                 );
               })}
@@ -145,6 +292,15 @@ export default function AllCalls() {
           <button className="pg-btn" disabled={page>=totalPages} onClick={()=>setPage(p=>p+1)}>Next →</button>
         </div>
       </div>
+
+      {reminderCall && (
+        <CallReminderModal
+          call={reminderCall}
+          existing={remindersByCall.get(reminderCall.id) || null}
+          onClose={()=>setReminderCall(null)}
+          onSave={saveCallReminder}
+        />
+      )}
     </div>
   );
 }

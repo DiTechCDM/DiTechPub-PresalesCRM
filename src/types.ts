@@ -127,6 +127,7 @@ export interface Reminder {
   done: boolean;
   createdAt: string;
   createdFrom?: 'call-tracker' | 'firms-db' | 'manual';
+  callId?: string;
 }
 
 export interface AdminSettings {
